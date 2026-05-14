@@ -216,7 +216,7 @@
     <label for="OT1">進項稅額</label>
     <input id="OT1" type="text" readonly>
     <br>
-    <button onclick="caculate()"><img class="maple-btn" src="./點擊計算.jpg"></button>
+    <button onclick="result()"><img class="maple-btn" src="./點擊計算.jpg"></button>
     <button onclick="clearall()"><img class="maple-btn" src="./清空試算區.jpg"></button>
     <hr>
     試算結果
@@ -231,18 +231,64 @@
 
 
     <script>
+        caculate();
+        caculate_2();
         function caculate() {
-            let temp1 = parseInt(document.getElementById("ST").value) * 0.05
+            let temp1 = Math.round(parseInt(document.getElementById("ST").value) * 0.05)
             document.getElementById("ST1").value = temp1
-            let temp2 = parseInt(document.getElementById("OT").value) * 0.05
+            if (isNaN(temp1)) {
+                document.getElementById("ST1").value = "請輸入銷項商品總額"
+            }
+        };
+
+        function caculate_2() {
+            let temp2 = Math.round(parseInt(document.getElementById("OT").value) * 0.05)
             document.getElementById("OT1").value = temp2
-        }
+            if (isNaN(temp2)) {
+                document.getElementById("OT1").value = "請輸入進項商品總額"
+            }
+        };
+
+        let temp1_x = document.getElementById("ST");
+        temp1_x.addEventListener("input", caculate);
+        let temp2_x = document.getElementById("OT");
+        temp2_x.addEventListener("input", caculate_2)
+
 
         function clearall() {
             document.getElementById("ST").value = ""
-            document.getElementById("ST1").value = ""
             document.getElementById("OT").value = ""
-            document.getElementById("OT1").value = ""
+            caculate();
+            caculate_2();
+            document.getElementById("LT").value = ""
+            document.getElementById("PT").value = ""
+            
+
+        }
+
+        function result() {
+            let r1x = parseInt(document.getElementById("ST").value);
+            let r2x = parseInt(document.getElementById("ST1").value);
+            let r1y = parseInt(document.getElementById("ST1").value);
+            let r2y = parseInt(document.getElementById("OT1").value);
+
+
+            if (isNaN(r1x) && !isNaN(r2x)) {
+                alert("請正確輸入銷項總額")
+            } else if (!isNaN(r1x) && isNaN(r2x)) {
+                alert("請正確輸入進項總額")
+            } else if (isNaN(r1x) && isNaN(r2x)) {
+                alert("請正確輸入銷項及進項總額")
+            }
+
+            if (r2x >= r2y) {
+                document.getElementById("PT").value = r2x - r2y
+                document.getElementById("LT").value = 0
+            } else {
+                document.getElementById("PT").value = 0
+                document.getElementById("LT").value = r2y-r2x
+            }
+
 
         }
     </script>
