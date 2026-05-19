@@ -216,6 +216,11 @@
     <label for="OT1">進項稅額</label>
     <input id="OT1" type="text" readonly>
     <br>
+    <label for="OT2">前期留底稅額</label>
+    <input id="OT2" type="text" value="0">
+    <br>
+
+
     <button onclick="result()"><img class="maple-btn" src="./點擊計算.jpg"></button>
     <button onclick="clearall()"><img class="maple-btn" src="./清空試算區.jpg"></button>
     <hr>
@@ -234,19 +239,33 @@
         caculate();
         caculate_2();
         function caculate() {
+            let temp0 = parseInt(document.getElementById("ST").value)
+            let temp00 = Number(document.getElementById("ST").value)
+
             let temp1 = Math.round(parseInt(document.getElementById("ST").value) * 0.05)
+
             document.getElementById("ST1").value = temp1
-            if (isNaN(temp1)) {
+            if (isNaN(temp00) || temp00 < 0) {
+                document.getElementById("ST1").value = "請輸入銷項商品總額"
+            }
+            if (isNaN(temp0)) {
                 document.getElementById("ST1").value = "請輸入銷項商品總額"
             }
         };
 
         function caculate_2() {
+            let temp0 = parseInt(document.getElementById("OT").value)
+            let temp00 = Number(document.getElementById("OT").value)
             let temp2 = Math.round(parseInt(document.getElementById("OT").value) * 0.05)
             document.getElementById("OT1").value = temp2
-            if (isNaN(temp2)) {
+
+            if (isNaN(temp00) || temp00 < 0) {
                 document.getElementById("OT1").value = "請輸入進項商品總額"
             }
+            if (isNaN(temp0)) {
+                document.getElementById("OT1").value = "請輸入進項商品總額"
+            }
+
         };
 
         let temp1_x = document.getElementById("ST");
@@ -262,32 +281,84 @@
             caculate_2();
             document.getElementById("LT").value = ""
             document.getElementById("PT").value = ""
-            
+            document.getElementById("OT2").value = 0
+
 
         }
 
         function result() {
             let r1x = parseInt(document.getElementById("ST").value);
             let r2x = parseInt(document.getElementById("ST1").value);
-            let r1y = parseInt(document.getElementById("ST1").value);
+            let r1y = parseInt(document.getElementById("OT").value);
             let r2y = parseInt(document.getElementById("OT1").value);
+            let r3x = parseInt(document.getElementById("OT2").value);
+            let r1xx = Number(document.getElementById("ST").value);
+            let r1yy = Number(document.getElementById("OT").value);
+            let r3xx = Number(document.getElementById("OT2").value);
 
 
-            if (isNaN(r1x) && !isNaN(r2x)) {
-                alert("請正確輸入銷項總額")
-            } else if (!isNaN(r1x) && isNaN(r2x)) {
-                alert("請正確輸入進項總額")
-            } else if (isNaN(r1x) && isNaN(r2x)) {
-                alert("請正確輸入銷項及進項總額")
+
+            if (isNaN(r1xx) && !isNaN(r1yy)) {
+                alert("請正確輸入銷項總額"); return;
+            } else if (!isNaN(r1xx) && isNaN(r1yy)) {
+                alert("請正確輸入進項總額"); return;
+            } else if (isNaN(r1xx) && isNaN(r1yy)) {
+                alert("請正確輸入銷項及進項總額"); return;
+            }
+            else {
+                if (isNaN(r1x) && !isNaN(r1y) || r1x < 0) {
+                    alert("請正確輸入銷項總額"); return;
+                } else if (!isNaN(r1x) && isNaN(r1y) || r1y < 0) {
+                    alert("請正確輸入進項總額"); return;
+                } else if (isNaN(r1x) && isNaN(r1y)) {
+                    alert("請正確輸入銷項及進項總額"); return;
+                }
+                else { };
             }
 
-            if (r2x >= r2y) {
-                document.getElementById("PT").value = r2x - r2y
-                document.getElementById("LT").value = 0
-            } else {
+            if (isNaN(r3xx) || r3xx < 0) { alert("請正確輸入留抵稅額") } else {
+                if (isNaN(r3x) || r3x < 0) { alert("請正確輸入留抵稅額"); return } else {
+                    if (r2x < r2y) {
+                        document.getElementById("PT").value = 0
+                        document.getElementById("LT").value = r2y - r2x + r3x
+                    }
+
+                    else if (r2x > r2y) {
+                        document.getElementById("PT").value = r2x - r2y - r3x
+                        document.getElementById("LT").value = 0
+
+                    }
+
+                    else if (r2x == r2y) {
+                        document.getElementById("PT").value = 0
+                        document.getElementById("LT").value = r3x
+                    }
+                    else if (r2x == 0 && r2y == 0) {
+                        document.getElementById("PT").value = 0
+                        document.getElementById("LT").value = 0
+                    }
+
+
+                    else {
+                        document.getElementById("PT").value = ""
+                        document.getElementById("LT").value = ""
+                    }
+                }
+            }
+
+            let rt1 = parseInt(document.getElementById("PT").value)
+            let rt2 = parseInt(document.getElementById("LT").value)
+
+            if (rt1 < 0) {
+                document.getElementById("LT").value = Math.abs(rt1)
                 document.getElementById("PT").value = 0
-                document.getElementById("LT").value = r2y-r2x
             }
+
+
+
+
+
+
 
 
         }
