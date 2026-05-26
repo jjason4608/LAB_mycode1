@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>營所稅介紹</title>
+    <style>
+        :root {
+            /* Twitch 核心調色盤 */
+            --tw-bg-darker: #0e0e10;
+            /* 最深背景 */
+            --tw-bg-card: #18181b;
+            /* 區塊背景 */
+            --tw-purple: #9147ff;
+            /* 亮紫色 */
+            --tw-purple-hover: #772ce8;
+            /* 深紫色 */
+            --tw-text-main: #efeff1;
+            /* 主文字 */
+            --tw-text-sub: #adadb8;
+            /* 次要文字 */
+            --tw-border: #26262c;
+            /* 邊框色 */
+        }
+
+        body {
+            background-color: var(--tw-bg-darker);
+            color: var(--tw-text-main);
+            font-family: "Inter", "Roobert", "Helvetica Neue", "Microsoft JhengHei", sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+            cursor: url(./img/鼠標.png), auto;
+        }
+
+        /* 內容容器 */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* 跳轉連結/返回美化 */
+        .back-link {
+            color: var(--tw-purple);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--tw-text-main);
+            text-decoration: underline;
+        }
+
+        /* 標題樣式 */
+        h3 {
+            font-size: 1.4rem;
+            color: var(--tw-text-main);
+            border-bottom: 2px solid var(--tw-border);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+
+        /* 說明前言引言區塊 */
+        .intro-box {
+            background-color: rgba(145, 71, 255, 0.05);
+            /* 淡淡的紫色背景 */
+            border-left: 4px solid var(--tw-purple);
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            color: var(--tw-text-main);
+            font-size: 1rem;
+        }
+
+        /* 定義清單美化（承襲第一支檔案風格） */
+        dl {
+            background-color: var(--tw-bg-card);
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid var(--tw-border);
+            margin-bottom: 30px;
+        }
+
+        dt {
+            color: var(--tw-purple);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 24px;
+        }
+
+        dt:first-child {
+            margin-top: 0;
+        }
+
+        dd {
+            margin: 8px 0 0 0;
+            color: var(--tw-text-sub);
+            font-size: 0.95rem;
+            border-left: 3px solid var(--tw-border);
+            padding-left: 15px;
+            text-align: justify;
+        }
+
+        /* 備註小字樣式 */
+        .note {
+            font-size: 0.85rem;
+            color: var(--tw-text-sub);
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px dashed var(--tw-border);
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid var(--tw-border);
+            margin: 30px 0;
+        }
+
+        .maple-btn1:hover {
+            transform: scale(1.05);
+            /* 增加點擊感：滑鼠移上去會放大 */
+        }
+
+        .maple-btn1 {
+            width: 280px;
+            /* 設定你想要的寬度 */
+            height: 180px;
+            /* 設定你想要的高度 */
+            object-fit: cover;
+            /* 關鍵：強制填滿並稍微裁切邊緣 */
+            border-radius: 12px;
+            /* 加上圓角會更像遊戲按鈕 */
+            cursor: pointer;
+            transition: transform 0.2s;
+            cursor: url(./img/鼠標.png), auto;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <a href="index.html"><img class="maple-btn1" style="width: 300px;" src="./img/返回營所稅.jfif"></a>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="PEITModel.html"><img class="maple-btn1" style="width: 300px;" src="./img/模擬營所稅.png"></a>
+
+
+        <h3>營所稅(營利事業所得稅)</h3>
+
+        <div class="intro-box">
+            每年度的 <strong>5 月 1 日至 5 月 31 日</strong>，必須完成上一年度的營所稅結算申報。
+        </div>
+
+        <h3>（一）幾種常見申報方式</h3>
+        <dl>
+            <dt>查帳申報</dt>
+            <dd>以「實際收入 − 實際成本費用」計算課稅所得額。</dd>
+
+            <dt>擴大書面審核申報（書審申報）</dt>
+            <dd>以「收入 × 部頒書審率」計算課稅所得額。</dd>
+
+            <dt>所得額標準申報</dt>
+            <dd>以「收入 × 部頒所得額率」計算課稅所得額。</dd>
+
+            <dt>淨利率標準申報</dt>
+            <dd>以「收入 × 部頒同業淨利率」計算課稅所得額。</dd>
+
+            <dt>簽證申報</dt>
+            <dd>同查帳申報，再加上會計師查核簽證。其中，簽證申報通常適用於年營收一億元以上，或有盈虧互抵需求的公司。</dd>
+        </dl>
+
+        <h3>申報方式詳細解析</h3>
+        <dl>
+            <dt>（一）查帳申報</dt>
+            <dd>查帳申報是按照公司帳載的全部營業收入，扣掉全部營業成本和費用，來計算課稅所得額。所有憑證、收支、金流都要符合稅法規定，並且能相互勾稽得起來。<br><br>因為資料必須非常完整，國稅局也比較容易調帳，事務所及公司雙方都要花較多時間整帳，費用也相對較高。
+            </dd>
+
+            <dt>（二）擴大書面審核申報（書審申報）</dt>
+            <dd>國稅局依行業統計資料，計算出各行各業的平均課稅所得額，並訂出【書審率標準】。<br><br>只要符合條件（多數行業年營收在三千萬元以下，部分行業是一千萬元以下），就可以選用書審申報來計算營所稅。因為是依同業平均課稅所得額計算，通常被國稅局調帳的機率較低。
+            </dd>
+
+            <dt>（三）所得額標準申報</dt>
+            <dd>所得額標準申報其實也是一種書面審核方式，只是【所得額標準率】通常會比【書審率】再高一些，但即使年營收超過三千萬也可以使用。<br><br>相較之下，採用所得額標準申報，被調帳的機率又更低。</dd>
+
+            <dt>（四）淨利率標準申報</dt>
+            <dd>淨利率標準申報同樣屬於書面審核，只是採用的是【淨利率標準】，一般會比【所得額標準】再高一些。除非有重大異常，實務上幾乎很少被調帳。</dd>
+
+            <dt>（五）簽證申報</dt>
+            <dd>簽證申報等同查帳申報的一切條件都要完整，再加上會計師出具簽證報告，相當於多了一份專業背書，替稅務人員分擔一部分工作，也進一步降低被調帳的機率。<br><br>因此費用相對較高，多半是年營收上億元或有盈虧互抵需求的公司才會採用。
+            </dd>
+        </dl>
+
+        <div class="note">
+            <strong>註：</strong>公司要適用《所得稅法》第 39 條「盈虧互抵」規定，必須同時符合：帳冊簿據完備、虧損及申報年度均經會計師查核簽證、並如期申報營所稅等要件。
+        </div>
+    </div>
+
+</body>
+
+</html>
