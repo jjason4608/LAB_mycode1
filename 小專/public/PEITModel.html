@@ -1,11 +1,875 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>營所稅模型</title>
+    <title>營所稅模型系統</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <style>
+        .maple-btn1 {
+
+            width: 280px;
+            height: 150px;
+            object-fit: contain;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            cursor: url(./img/鼠標.png), auto;
+        }
+
+        .maple-btn1:hover {
+            transform: scale(1.05);
+            /* 增加點擊感：滑鼠移上去會放大 */
+        }
+
+        .toggle-container.maple-btn1 {
+            margin-left: auto;
+        }
+    </style>
+    <style>
+        #sotired {
+            font-family: 'Noto Sans TC', sans-serif;
+            /* 確保字體俐落 */
+            font-size: 14px;
+            font-weight: bold;
+            color: #fca5a5;
+            /* 淡淡的楓葉紅/惡魔殺手代表色，比純白更有帶入感 */
+            letter-spacing: 1px;
+            /* 字距微調，增加易讀性 */
+
+            /* 關鍵：加上微小的黑色文字陰影（Text Shadow），這是遊戲介面文字清晰的祕密 */
+            text-shadow:
+                1px 1px 0px #000,
+                -1px -1px 0px #000,
+                1px -1px 0px #000,
+                -1px 1px 0px #000;
+
+            background: rgba(0, 0, 0, 0.4);
+            /* 給對白一個淡淡的黑透明底色背景 */
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+    </style>
+    <style>
+        :root {
+            /* Twitch 核心調色盤 */
+            --tw-bg-darker: #0e0e10;
+            /* 最深背景 */
+            --tw-bg-card: #18181b;
+            /* 區塊背景 */
+            --tw-purple: #9147ff;
+            /* 亮紫色 */
+            --tw-purple-hover: #772ce8;
+            /* 深紫色 */
+            --tw-text-main: #efeff1;
+            /* 主文字 */
+            --tw-text-sub: #adadb8;
+            /* 次要文字 */
+            --tw-border: #26262c;
+            /* 邊框色 */
+            --tw-input-bg: #1f1f23;
+            /* 輸入框背景 */
+            --tw-select-hover: #26262c;
+            /* 下拉選單滑過顏色 */
+        }
+
+        body {
+            background-color: var(--tw-bg-darker);
+            color: var(--tw-text-main);
+            font-family: "Inter", "Roobert", "Helvetica Neue", "Microsoft JhengHei", sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+            cursor: url(./img/鼠標.png), auto;
+        }
+
+        /* 主容器：Flex 佈局讓兩台模型左右並排 */
+        .main-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        /* 單個申報模型的卡片樣式 */
+        .model-card {
+            flex: 1;
+            background-color: var(--tw-bg-card);
+            border-radius: 8px;
+            padding: 30px;
+            border: 1px solid var(--tw-border);
+            box-sizing: border-box;
+        }
+
+        /* 標題樣式 */
+        h3 {
+            font-size: 1.4rem;
+            color: var(--tw-text-main);
+            border-bottom: 2px solid var(--tw-border);
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--tw-purple);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* 表單群組：垂直排列表單 */
+        .form-group,
+        .form-group-hide {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            color: var(--tw-text-sub);
+            font-weight: bold;
+        }
+
+        /* 輸入框通用美化 */
+        .form-input {
+            width: 100%;
+            background-color: var(--tw-input-bg);
+            border: 1px solid var(--tw-border);
+            color: var(--tw-text-main);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--tw-purple);
+            box-shadow: 0 0 0 2px rgba(145, 71, 255, 0.2);
+        }
+
+        /* 唯讀輸入框樣式 */
+        .form-input[readonly] {
+            background-color: rgba(38, 38, 44, 0.4);
+            color: var(--tw-text-sub);
+            border-left: 3px solid var(--tw-border);
+            cursor: not-allowed;
+        }
+
+        /* 計算結果唯讀框強調 */
+        .result-input[readonly] {
+            border-left: 3px solid var(--tw-purple);
+            color: var(--tw-text-main);
+            font-weight: bold;
+            background-color: rgba(145, 71, 255, 0.05);
+        }
+
+        /* 按鈕美化 */
+        button {
+            flex: 1;
+            width: 30%;
+            background-color: var(--tw-purple);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            cursor: url(./img/鼠標.png), auto;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--tw-purple-hover);
+            transform: scale(1.01);
+        }
+
+        button:active {
+            transform: scale(0.99);
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid var(--tw-border);
+            margin: 25px 0;
+        }
+
+        /* ==========================================================================
+           【100% 解決勾不到】全新改版 Checkbox 樣式
+           ========================================================================== */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-bottom: 18px;
+            padding: 4px 0;
+            width: 100%;
+        }
+
+        /* 撐滿寬度 */
+
+
+        /* 讓原生 checkbox 精準疊在自訂方塊的位置上，並維持可點擊狀態 */
+        .checkbox-group input[type="checkbox"] {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            opacity: 0;
+            z-index: 3;
+            /* 最上層，絕對點得到 */
+            /* margin: 0;
+            cursor: url(./img/鼠標.png), auto; */
+        }
+
+        /* 標籤文字 */
+        */ .checkbox-group label {
+            position: relative;
+            padding-left: 28px;
+            color: var(--tw-text-sub);
+            font-size: 0.95rem;
+            font-weight: bold;
+            user-select: none;
+            transition: color 0.2s;
+            z-index: 1;
+            cursor: url(./img/鼠標.png), auto;
+        }
+
+        /* 點擊文字也能觸發 */
+        /* }
+
+        /* 自訂方塊底色與邊框 */
+        .checkbox-group label::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            background-color: var(--tw-input-bg);
+            border: 1px solid var(--tw-border);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+
+        /* 懸浮發光 */
+        .checkbox-group input[type="checkbox"]:hover+label::before {
+            border-color: var(--tw-purple);
+        }
+
+        /* 勾選後的色彩轉變 */
+        .checkbox-group input[type="checkbox"]:checked+label {
+            color: var(--tw-text-main);
+        }
+
+        .checkbox-group input[type="checkbox"]:checked+label::before {
+            background-color: var(--tw-purple);
+            border-color: var(--tw-purple);
+            box-shadow: 0 0 8px rgba(145, 71, 255, 0.4);
+        }
+
+        /* 白色「✓」勾勾 */
+        .checkbox-group input[type="checkbox"]:checked+label::after {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-57%) rotate(45deg);
+            width: 4px;
+            height: 9px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            z-index: 2;
+        }
+
+        /* ==========================================================================
+           【去醜除白】Select2 專屬 Twitch 暗黑風格完全覆蓋
+           ========================================================================== */
+        /* 下拉選單框本體 */
+        .select2-container--default .select2-selection--single {
+            background-color: var(--tw-input-bg) !important;
+            border: 1px solid var(--tw-border) !important;
+            height: 40px !important;
+            border-radius: 6px !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--tw-text-main) !important;
+            padding-left: 12px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 38px !important;
+        }
+
+        /* 下拉展開後的浮動視窗 */
+        .select2-dropdown {
+            background-color: var(--tw-bg-card) !important;
+            border: 1px solid var(--tw-purple) !important;
+            color: var(--tw-text-main) !important;
+        }
+
+        /* 修正：把圖二中那個醜醜的白色搜尋框徹底黑化 */
+        .select2-search--dropdown {
+            background-color: var(--tw-bg-card) !important;
+            padding: 8px !important;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            background-color: var(--tw-input-bg) !important;
+            border: 1px solid var(--tw-border) !important;
+            color: var(--tw-text-main) !important;
+            border-radius: 4px !important;
+            outline: none !important;
+        }
+
+        /* 修正：當搜尋框聚焦時，改成紫色微光，去掉原本的死白 */
+        .select2-search--dropdown .select2-search__field:focus {
+            border-color: var(--tw-purple) !important;
+        }
+
+        /* 修正：未選中/滑鼠移過去的選項，改成深灰背景（去掉原本亮白） */
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: var(--tw-purple) !important;
+            color: white !important;
+        }
+
+        /* 修正：已經被選取住的那一欄，在清單中的預設反白顏色（處理圖二的亮灰色） */
+        .select2-container--default .select2-results__option[aria-selected=true] {
+            background-color: rgba(145, 71, 255, 0.15) !important;
+            color: var(--tw-purple) !important;
+        }
+
+        /* 滑鼠正常移入其他未選中欄位 */
+        .select2-results__option {
+            background-color: var(--tw-bg-card) !important;
+            color: var(--tw-text-sub) !important;
+        }
+    </style>
+    <style>
+        /* 切換按鈕的外殼容器 */
+        .toggle-container {
+            display: flex;
+            background-color: #1e1e24;
+            /* 比背景稍微亮一點的深灰色 */
+            padding: 4px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: fit-content;
+        }
+
+        /* 預設按鈕樣式 */
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #a0a0a0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        /* 被選中時的樣式（搭配你的紫色） */
+        .toggle-btn.active {
+            background-color: #8b5cf6;
+            /* 你的亮紫色 */
+            color: #ffffff;
+            font-weight: bold;
+        }
+    </style>
+    <!-- 提示框CSS -->
+    <style>
+        /* 彈出視窗背景（遮罩層） */
+        .modal {
+            display: none;
+            /* 預設隱藏 */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            /* 半透明黑背景 */
+            backdrop-filter: blur(4px);
+            /* 背景稍微模糊，更有質感 */
+        }
+
+        /* 小框框視窗主體 */
+        .modal-content {
+            background-color: #1e1e1e;
+            /* 深灰色背景，搭配你的暗黑模式 */
+            color: #ffffff;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #333;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* 標頭樣式 */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #a855f7;
+            /* 搭配你原本按鈕的紫色系 */
+        }
+
+        /* 關閉按鈕 (X) */
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        /* 表格樣式 */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table th,
+        .info-table td {
+            border: 1px solid #444;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .info-table th {
+            background-color: #2d2d2d;
+            color: #a855f7;
+        }
+
+        .info-table tr:nth-child(even) {
+            background-color: #252525;
+        }
+
+        /* 彈出動畫 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
+
 <body>
-    
+
+    <div class="toggle-container">
+        <a href="index.html"><img class="maple-btn1" style="width: 300px;" src="./img/返回營業稅-2.jpg"></a>
+        <a href="PEIT.html"><img class="maple-btn1" style="width: 300px;" src="./img/返回營所稅介紹.jpg"></a>
+        <button type="button" id="btn-shushen" class="toggle-btn active">書審或所得額申報模型</button>
+        <button type="button" id="btn-chazhang" class="toggle-btn">查帳申報模型</button>
+        <img id="tired" src="./img/圖樣.png" class="maple-btn1" style="object-fit: cover;">
+        <span id="sotired" style="color: #772ce8;display: none;">惡魔殺手那個傢伙<br>竟然讓我自己報稅，可惡！</span>
+    </div>
+
+    <div id="shushen-block">
+    </div>
+
+    <div id="chazhang-block" class="hidden">
+    </div>
+    <div class="main-wrapper">
+
+        <div class="model-card" id="shushen">
+            <h3>書審或所得額申報模型</h3>
+
+            <div class="checkbox-group">
+                <input id="LMVR" type="checkbox">
+                <label for="LMVR">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;調帳風險高(缺憑率過高)</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input id="NPMA" type="checkbox">
+                <label for="NPMA">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;成本淨決模式</label>
+            </div>
+
+            <div class="form-group">
+                <label for="IC" class="form-label">標準代號及行業名稱</label>
+
+                <select id="IC" style="width: 100%;">
+
+                </select>
+                <button id="findData" style="width: 20%;">點我查看所屬行號資料</button>
+
+            </div>
+
+            <div class="form-group">
+                <label for="ISC" class="form-label">所屬小業別類型</label>
+                <input id="ISC" class="form-input" type="text" readonly value="選擇標準代號代入">
+            </div>
+
+
+            <div class="form-group">
+                <label for="NSR" class="form-label">銷貨收入淨額</label>
+                <input id="NSR" class="form-input" data-type="money" type="text" placeholder="請輸入金額...">
+            </div>
+
+            <div class="form-group" id="GPM_type" style="display: none;">
+                <label for="GPM" class="form-label">行業核定毛利率</label>
+                <input id="GPM" class="form-input" type="text" readonly>
+            </div>
+
+            <div class="form-group" id="GP_type" style="display: none;">
+                <label for="GP" class="form-label">銷貨毛利</label>
+                <input id="GP" class="form-input" data-type="money" type="text" readonly>
+            </div>
+
+            <div class="form-group" id="OPEX_type" style="display: none;">
+                <label for="OPEX_she" class="form-label">營業費用</label>
+                <input id="OPEX_she" class="form-input" data-type="money" type="text" placeholder="請輸入金額...">
+            </div>
+
+            <div class="form-group" id="OI_type" style="display: none;">
+                <label for="OI" class="form-label">營業利益</label>
+                <input id="OI" class="form-input" data-type="money" type="text" readonly>
+            </div>
+
+            <div class="form-group" id="ITR_type" style="display: none;">
+                <label for="ITR" class="form-label">所得稅率</label>
+                <input id="ITR" class="form-input" type="text" readonly value="20%">
+            </div>
+
+            <div class="form-group" id="PSI_type">
+                <label for="PSI" class="form-label">同業利潤標準</label>
+                <input id="PSI" class="form-input" type="text" readonly value="6%">
+            </div>
+
+            <div class="form-group" id="SNPM_type">
+                <label for="SNPM" class="form-label">所得額標準</label>
+                <input id="SNPM" class="form-input" type="text" readonly value="10%">
+            </div>
+
+            <hr>
+            <button id="btn-calculate-book" class="bt_origin">點擊計算 (書審)</button>
+            <button id="btn-calculate-SNPM" class="bt_origin">點擊計算 (所得額標準)</button>
+            <button id="btn-calculate-NPMA" style="display: none;">點擊計算</button>
+            <hr>
+
+            <h4>計算結果</h4>
+            <div class="form-group">
+                <label for="ACIT" class="form-label">年度營所稅：</label>
+                <input id="ACIT" class="form-input result-input" data-type="money" type="text" readonly value="0">
+            </div>
+            <div class="form-group" id="ADJ" style="display: none;">
+                <label for="ADJ_ACIT" class="form-label">調帳預估營所稅：</label>
+                <input id="ADJ_ACIT" class="form-input result-input" data-type="money" type="text" readonly value="0">
+            </div>
+
+            <div class="form-group" id="PAT" style="display: none;">
+                <label for="PAT_A" class="form-label">估計補稅額：</label>
+                <input id="PAT_A" class="form-input result-input" data-type="money" type="text" readonly value="0">
+            </div>
+        </div>
+
+        <div class="model-card" id="chazhang" style="display: none;">
+            <h3>查帳申報模型</h3>
+
+            <div class="form-group">
+                <label for="NSR_Audit" class="form-label">銷貨收入淨額 (NSR)</label>
+                <input id="NSR_Audit" class="form-input" type="text" data-type="money" placeholder="請輸入金額...">
+            </div>
+
+            <div class="form-group">
+                <label for="COGS" class="form-label">營業成本 (COGS)</label>
+                <input id="COGS" class="form-input" type="text" data-type="money" placeholder="請輸入金額...">
+            </div>
+
+            <div class="form-group">
+                <label for="OPEX" class="form-label">營業費用 (OPEX)</label>
+                <input id="OPEX" class="form-input" type="text" data-type="money" placeholder="請輸入金額...">
+            </div>
+
+            <div class="form-group">
+                <label for="NIO" class="form-label">營業外收入及損失淨額 (NIO)</label>
+                <input id="NIO" class="form-input" type="text" data-type="money" placeholder="請輸入金額..." value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="OI_Audit" class="form-label">課稅所得額 (OI)</label>
+                <input id="OI_Audit" class="form-input" type="text" data-type="money" readonly value="0">
+            </div>
+
+            <hr>
+            <button id="btn-calculate-audit">點擊計算 (查帳)</button>
+            <hr>
+
+            <h4>計算結果</h4>
+            <div class="form-group">
+                <label for="ACIT_Audit" class="form-label">年度營所稅：</label>
+                <input id="ACIT_Audit" class="form-input result-input" data-type="money" type="text" readonly value="0">
+            </div>
+        </div>
+
+    </div>
+    <!-- 以下為提示框資料 -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>行號詳細稅務資料</h3>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <table class="info-table">
+                    <tr>
+                        <th>欄位名稱</th>
+                        <th>資料</th>
+                    </tr>
+                    <tr>
+                        <td>所屬小業別</td>
+                        <td id="modal-isc">-</td>
+                    </tr>
+                    <tr>
+                        <td>標準代號</td>
+                        <td id="modal-code">-</td>
+                    </tr>
+                    <tr>
+                        <td>行業名稱</td>
+                        <td id="modal-name">-</td>
+                    </tr>
+                    <tr>
+                        <td>擴大書審純益率</td>
+                        <td id="modal-psi">-</td>
+                    </tr>
+                    <tr>
+                        <td>所得額標準</td>
+                        <td id="modal-income">-</td>
+                    </tr>
+                    <tr>
+                        <td>毛利率</td>
+                        <td id="modal-gross">-</td>
+                    </tr>
+                    <tr>
+                        <td>費用率</td>
+                        <td id="modal-expense">-</td>
+                    </tr>
+                    <tr>
+                        <td>淨利率</td>
+                        <td id="modal-net">-</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </body>
+<script>
+    $(document).ready(function () {
+        // 初始化左欄的 Select2
+        $('#IC').select2({
+            language: {
+                noResults: function () {
+                    return "找不到相符的業別";
+                }
+            }
+        });
+    });
+</script>
+
+<script>
+    $("#tired").on("mouseenter", function () {
+        $("#sotired").prop("style", "display:block")
+    })
+    $("#tired").on("mouseleave", function () {
+        $("#sotired").prop("style", "display:none")
+    })
+
+    $("#btn-shushen").on("click", function () {
+        $("#btn-shushen").prop("class", "toggle-btn active")
+        $("#btn-chazhang").prop("class", "toggle-btn")
+        $("#shushen").prop("style", "display: block")
+        $("#chazhang").prop("style", "display: none")
+    })
+    $("#btn-chazhang").on("click", function () {
+        $("#btn-shushen").prop("class", "toggle-btn")
+        $("#btn-chazhang").prop("class", "toggle-btn active")
+        $("#shushen").prop("style", "display: none")
+        $("#chazhang").prop("style", "display: block")
+    })
+
+    $("#LMVR").change(function () {
+        if ($(this).prop("checked")) {
+            $("#ADJ").prop("style", "display: block")
+            $("#PAT").prop("style", "display: block")
+        } else {
+            $("#ADJ").prop("style", "display: none")
+            $("#PAT").prop("style", "display: none")
+        }
+    })
+
+    $("#NPMA").change(function () {
+        if ($(this).prop("checked")) {
+            $("#GPM_type").prop("style", "display:block")
+            $("#GP_type").prop("style", "display:block")
+            $("#OPEX_type").prop("style", "display:block")
+            $("#OI_type").prop("style", "display:block")
+            $("#ITR_type").prop("style", "display:block")
+            $("#PSI_type").prop("style", "display:none")
+            $("#SNPM_type").prop("style", "display:none")
+            $("#btn-calculate-NPMA").prop("style", "display:block")
+            $(".bt_origin").prop("style", "display:none")
+        } else {
+            $("#GPM_type").prop("style", "display:none")
+            $("#GP_type").prop("style", "display:none")
+            $("#OPEX_type").prop("style", "display:none")
+            $("#OI_type").prop("style", "display:none")
+            $("#ITR_type").prop("style", "display:none")
+            $("#PSI_type").prop("style", "display:inline-block")
+            $("#SNPM_type").prop("style", "display:block")
+            $("#btn-calculate-NPMA").prop("style", "display:none")
+            $(".bt_origin").prop("style", "display:inline-block")
+
+
+        }
+    })
+    $(document).ready(function () {
+        // 改成監聽整個 document，並指定給 #NSR
+        $(document).on('input', '[data-type="money"]', function () {
+            var value = $(this).val().replace(/[^\d]/g, '');
+            var formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            $(this).val(formattedValue);
+            var rawValue = $("#NSR").val().replace(/,/g, '');
+            if ($(this).prop('id') === 'NSR' && !$("#NPMA").prop("checked")) {
+                var rawValue = parseInt(value) || 0;
+                if (rawValue > 30000000) {
+                    $("#PSI_type").prop("style", "display:none");
+                } else {
+                    $("#PSI_type").prop("style", "display:block");
+                }
+            }
+        });
+
+    });
+</script>
+
+<script>
+    var dataTable = null
+    $(document).ready(function () {
+        $.ajax({
+            url: "/taxJS",
+            type: "get",
+            success: function (data) {
+                dataTable = data;
+                findCodeType();
+                $("#IC").trigger("change");
+                modalOpen()
+            }
+        })
+
+        function findCodeType() {
+            for (let i = 0; i < dataTable.length; i++) {
+                var dataCode = dataTable[i].標準代號
+                var dataType = dataTable[i].行業名稱
+                var dataCodeType = `${dataCode}  ${dataType}`
+                var htmlOP = `<option value=${dataCodeType}>${dataCodeType}</option>`
+                $("#IC").append(htmlOP)
+            }
+            findLargeType()
+        }
+
+        function findLargeType() {
+            $("#IC").on("change", function () {
+                let selectedValue = $(this).val();
+                if (selectedValue) {
+                    let serchcode = selectedValue.substring(0, 8);
+                    console.log(serchcode);
+                    var findout = dataTable.find(function (e) {
+                        return e.標準代號 == serchcode
+                    })
+                    $("#ISC").val(findout.所屬小業別)
+                    let originalData = findout.擴大書審純益率 ? String(findout.擴大書審純益率).trim() : "";
+                    if (/^[－\-—]$/.test(originalData)) {
+                        $("#PSI").val(originalData);
+                    }
+                    else if (/\d/.test(originalData)) {
+                        $("#PSI").val(originalData + "%");
+                    }
+                    else {
+                        $("#PSI").val(originalData);
+                    }
+                    $("#SNPM").val(findout.所得額標準 + "%")
+                    $("#GPM").val(findout.毛利率 + "%")
+                    localStorage.setItem("code", serchcode);
+                }
+            })
+        };
+
+
+
+        function modalOpen() {
+            $("#findData").on("click", function () {
+                $("#infoModal").fadeIn(200);
+                let selectedValue = localStorage.getItem("code")
+                let serchcode = selectedValue.substring(0, 8);
+                var findout = dataTable.find(function (e) {
+                    return e.標準代號 == serchcode
+                })
+                $("#modal-isc").text(findout.所屬小業別)
+                $("#modal-code").text(findout.標準代號)
+                $("#modal-name").text(findout.行業名稱)
+                $("#modal-psi").text(findout.擴大書審純益率)
+                $("#modal-income").text(findout.所得額標準)
+                $("#modal-gross").text(findout.毛利率)
+                $("#modal-expense").text(findout.費用率)
+                $("#modal-net").text(findout.淨利率)
+
+                $(".close-btn").click(function () {
+                    $("#infoModal").fadeOut(200);
+                });
+                $(window).click(function (event) {
+                    if (event.target == document.getElementById("infoModal")) {
+                        $("#infoModal").fadeOut(200);
+                    }
+                });
+            })
+        }
+
+    })
+
+
+
+</script>
+
+
 </html>

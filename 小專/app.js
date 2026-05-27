@@ -10,6 +10,7 @@ const pdfTableExtractor = require('pdf-table-extractor');
 var fs = require("fs");
 const path = require('path');
 const pdfParse = require('pdf-parse');
+const { send } = require("process");
 app.listen(3000);
 console.log("Web伺服器就緒，開始接受用戶端連線.");
 console.log("「Ctrl + C」可結束伺服器程式.");
@@ -42,7 +43,7 @@ pdfTableExtractor(path.join(__dirname, "./114.pdf"), function (result) {
                     "所屬小業別": currentSubCategory,
                     "標準代號": cleanCells[0],
                     "行業名稱": cleanCells[1],
-                    "擴大書審純益率":Number(cleanCells[2]),
+                    "擴大書審純益率":cleanCells[2]? cleanCells[2].replace(/\s+/g, "") : "",
                     "所得額標準": Number(cleanCells[3]),
                     "毛利率": Number(cleanCells[4]),
                     "費用率": Number(cleanCells[5]),
@@ -64,9 +65,15 @@ pdfTableExtractor(path.join(__dirname, "./114.pdf"), function (result) {
     }
     var taxJS=JSON.stringify(taxList,null,"\t")
     fs.writeFileSync("data.JSON",taxJS)
-
-
 })
+
+var dataFile="./data.JSON"
+
+app.get("/taxJS",function(req,res){
+    var taxJS=JSON.parse(fs.readFileSync(dataFile))
+    res.send(taxJS)
+})
+
 
 
 
