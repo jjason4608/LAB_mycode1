@@ -31,7 +31,7 @@
         }
     </style>
     <style>
-        #sotired {
+        .textCSS {
             font-family: 'Noto Sans TC', sans-serif;
             /* 確保字體俐落 */
             font-size: 14px;
@@ -52,6 +52,10 @@
             /* 給對白一個淡淡的黑透明底色背景 */
             padding: 6px 12px;
             border-radius: 6px;
+        }
+
+        #ADJ_ACIT {
+            position: relative !important;
         }
     </style>
     <style>
@@ -492,6 +496,29 @@
             }
         }
     </style>
+    <!-- 提示文字CSS -->
+    <style>
+        /* 提示框的樣式 */
+        .custom-tooltip {
+            position: absolute;
+            top: -35px;
+            /* 讓它出現在按鈕上方 */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            display: none;
+            /* 預設隱藏 */
+        }
+
+        #ADJ {
+            position: relative !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -502,7 +529,7 @@
         <button type="button" id="btn-shushen" class="toggle-btn active">書審或所得額申報模型</button>
         <button type="button" id="btn-chazhang" class="toggle-btn">查帳申報模型</button>
         <img id="tired" src="./img/圖樣.png" class="maple-btn1" style="object-fit: cover;">
-        <span id="sotired" style="color: #772ce8;display: none;">惡魔殺手那個傢伙<br>竟然讓我自己報稅，可惡！</span>
+        <span class="textCSS" style="display: none;">惡魔殺手那個傢伙<br>竟然讓我自己報稅，可惡！</span>
     </div>
 
     <div id="shushen-block">
@@ -542,7 +569,7 @@
 
 
             <div class="form-group">
-                <label for="NSR" class="form-label">銷貨收入淨額</label>
+                <label for="NSR" class="form-label">年度銷貨收入淨額</label>
                 <input id="NSR" class="form-input" data-type="money" type="text" placeholder="請輸入金額...">
             </div>
 
@@ -562,13 +589,8 @@
             </div>
 
             <div class="form-group" id="OI_type" style="display: none;">
-                <label for="OI" class="form-label">營業利益</label>
+                <label for="OI" class="form-label">營業利益(損失)</label>
                 <input id="OI" class="form-input" data-type="money" type="text" readonly>
-            </div>
-
-            <div class="form-group" id="ITR_type" style="display: none;">
-                <label for="ITR" class="form-label">所得稅率</label>
-                <input id="ITR" class="form-input" type="text" readonly value="20%">
             </div>
 
             <div class="form-group" id="PSI_type">
@@ -581,20 +603,29 @@
                 <input id="SNPM" class="form-input" type="text" readonly value="10%">
             </div>
 
+
+            <div class="form-group" id="ITR_type">
+                <label for="ITR" class="form-label">所得稅率</label>
+                <input id="ITR" class="form-input" type="text" readonly value="20%">
+            </div>
             <hr>
             <button id="btn-calculate-book" class="bt_origin">點擊計算 (書審)</button>
             <button id="btn-calculate-SNPM" class="bt_origin">點擊計算 (所得額標準)</button>
             <button id="btn-calculate-NPMA" style="display: none;">點擊計算</button>
+            <button id="clear">點我清空試算</button>
+            
             <hr>
 
             <h4>計算結果</h4>
             <div class="form-group">
                 <label for="ACIT" class="form-label">年度營所稅：</label>
                 <input id="ACIT" class="form-input result-input" data-type="money" type="text" readonly value="0">
+                <span id="result-text" class="textCSS"></span>
             </div>
             <div class="form-group" id="ADJ" style="display: none;">
                 <label for="ADJ_ACIT" class="form-label">調帳預估營所稅：</label>
                 <input id="ADJ_ACIT" class="form-input result-input" data-type="money" type="text" readonly value="0">
+                <span id="ADJ_ACIT_text" class="textCSS"></span>
             </div>
 
             <div class="form-group" id="PAT" style="display: none;">
@@ -623,12 +654,12 @@
 
             <div class="form-group">
                 <label for="NIO" class="form-label">營業外收入及損失淨額 (NIO)</label>
-                <input id="NIO" class="form-input" type="text" data-type="money" placeholder="請輸入金額..." value="0">
+                <input id="NIO" class="form-input" type="text" data-type="money" placeholder="請輸入金額...">
             </div>
 
             <div class="form-group">
                 <label for="OI_Audit" class="form-label">課稅所得額 (OI)</label>
-                <input id="OI_Audit" class="form-input" type="text" data-type="money" readonly value="0">
+                <input id="OI_Audit" class="form-input" type="text" data-type="money" readonly>
             </div>
 
             <hr>
@@ -709,10 +740,10 @@
 
 <script>
     $("#tired").on("mouseenter", function () {
-        $("#sotired").prop("style", "display:block")
+        $(".textCSS").prop("style", "display:block")
     })
     $("#tired").on("mouseleave", function () {
-        $("#sotired").prop("style", "display:none")
+        $(".textCSS").prop("style", "display:none")
     })
 
     $("#btn-shushen").on("click", function () {
@@ -747,7 +778,7 @@
             $("#ITR_type").prop("style", "display:block")
             $("#PSI_type").prop("style", "display:none")
             $("#SNPM_type").prop("style", "display:none")
-            $("#btn-calculate-NPMA").prop("style", "display:block")
+            $("#btn-calculate-NPMA").prop("style", "display:inline-block")
             $(".bt_origin").prop("style", "display:none")
         } else {
             $("#GPM_type").prop("style", "display:none")
@@ -813,7 +844,6 @@
                 let selectedValue = $(this).val();
                 if (selectedValue) {
                     let serchcode = selectedValue.substring(0, 8);
-                    console.log(serchcode);
                     var findout = dataTable.find(function (e) {
                         return e.標準代號 == serchcode
                     })
@@ -831,6 +861,8 @@
                     $("#SNPM").val(findout.所得額標準 + "%")
                     $("#GPM").val(findout.毛利率 + "%")
                     localStorage.setItem("code", serchcode);
+                    localStorage.setItem("GPR", findout.毛利率)
+                    localStorage.setItem("NIR", findout.淨利率)
                 }
             })
         };
@@ -867,6 +899,216 @@
 
     })
 
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#clear").on("click", function () {
+            $("#NSR").val("")
+            $("#GP").val("")
+            $("#OPEX_she").val("")
+            $("#OI").val("")
+            $("#result-text").text("")
+            $("#ACIT").val("0")
+            $("#ADJ_ACIT").val("0")
+            $("#ADJ_ACIT_text").text("")
+            $("#PAT_A").val("0")
+        })
+        // 清除資料
+        $("#btn-calculate-book").on("click", function () {
+            function clear() {
+                $("#result-text").text("")
+                $("#ACIT").val("0")
+                $("#ADJ_ACIT").val("0")
+                $("#ADJ_ACIT_text").text("")
+                $("#PAT_A").val("0")
+            }
+            var NRT_text = $("#NSR").val()
+            var SSrate_text = $("#PSI").val()
+            var ITR_text = $("#ITR").val()
+            var NSR = Number($("#NSR").val().replace(/,/g, ''))
+            var SSrate = parseFloat($("#PSI").val().replace(/[\(\)]/g, ''))
+            var ITR = 0.2
+            var ACIT = String(Math.round(((NSR * SSrate / 100) * ITR))).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            // 下方宣告調帳預估營所稅所需項目
+            var NIR = localStorage.getItem("NIR")
+            var ADJACIT = String(Math.round(((NSR * NIR / 100) * ITR))).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+
+            if (NSR > 30000000) { alert("營業額已超過3000萬無法使用同業利潤標準請改點選所得額標準計算"); clear() }
+            else if (NSR == "") { alert("請輸入營業額"); clear() }
+            else if (SSrate_text.startsWith('(')) {
+                alert("若同業利潤率顯示為『 ( ) 』，原則上應使用所得額標準；但經國稅局核定之特殊情形者，不在此限。");
+                $("#ACIT").val(ACIT);
+                $("#result-text").text(`年度銷貨收入淨額${NRT_text}*同業利潤率${SSrate_text}*所得稅率${ITR_text}=${ACIT}`)
+                $("#ADJ_ACIT").val(ADJACIT);
+                $("#ADJ_ACIT_text").text(`年度銷貨收入淨額${NRT_text}*淨利率${NIR}%*所得稅率${ITR_text}=${ADJACIT}`)
+                $("#PAT_A").val(String(Math.round(((NSR * NIR / 100) * ITR) - (NSR * SSrate / 100) * ITR)).replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+
+
+            }
+            else if (SSrate_text.startsWith('－')) { alert("若同業利潤率顯示為『－』，代表該行業別不適用書審率核定稅額"); clear(); }
+            else {
+                $("#ACIT").val(ACIT);
+                $("#result-text").text(`年度銷貨收入淨額${NRT_text}*同業利潤率${SSrate_text}*所得稅率${ITR_text}=${ACIT}`)
+                $("#ADJ_ACIT").val(ADJACIT);
+                $("#ADJ_ACIT_text").text(`年度銷貨收入淨額${NRT_text}*淨利率${NIR}%*所得稅率${ITR_text}=${ADJACIT}`)
+                $("#PAT_A").val(String(Math.round(((NSR * NIR / 100) * ITR) - (NSR * SSrate / 100) * ITR)).replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+            };
+
+
+        })
+        // 書審按鈕
+        $("#btn-calculate-SNPM").on("mouseenter", function () {
+            var tooltipText = "年營業額未達 3,000 萬者仍可適用所得額標準。若進項憑證不足或一般費用較少，採所得額標準申報有助於降低帳簿檢查（調帳）之風險。";
+            var tooltipHtml = '<div class="custom-tooltip">' + tooltipText + '</div>';
+
+            // 把提示框塞進按鈕內，並用 fadeIn 做出淡入效果
+            $(this).append(tooltipHtml);
+            $(".custom-tooltip").fadeIn(200);
+        });
+        // 移入所得額按鈕提示字
+        $("#btn-calculate-SNPM").on("mouseleave", function () {
+            $(".custom-tooltip").remove();
+        });
+        // 移出所得額按鈕消失提示字
+        $("#btn-calculate-SNPM").on("click", function () {
+            function clear() {
+                $("#result-text").text("")
+                $("#ACIT").val("0")
+                $("#ADJ_ACIT").val("0")
+                $("#ADJ_ACIT_text").text("")
+                $("#PAT_A").val("0")
+            }
+            var NRT_text = $("#NSR").val()
+            var CZrate_text = $("#SNPM").val()
+            var ITR_text = $("#ITR").val()
+            var NSR = Number($("#NSR").val().replace(/,/g, ''))
+            var CZrate = parseFloat($("#SNPM").val())
+            var ITR = 0.2
+            var ACIT = String(Math.round(((NSR * CZrate / 100) * ITR))).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            // 下方宣告調帳預估營所稅所需項目
+            var NIR = localStorage.getItem("NIR")
+            var ADJACIT = String(Math.round(((NSR * NIR / 100) * ITR))).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            if (NSR == "") { alert("請輸入營業額"); clear() } else {
+                $("#ACIT").val(ACIT)
+                $("#result-text").text(`年度銷貨收入淨額${NRT_text}*所得額標準${CZrate_text}*所得稅率${ITR_text}=${ACIT}`)
+                $("#ADJ_ACIT").val(ADJACIT);
+                $("#ADJ_ACIT_text").text(`年度銷貨收入淨額${NRT_text}*淨利率${NIR}%*所得稅率${ITR_text}=${ADJACIT}`)
+                $("#PAT_A").val(String(Math.round(((NSR * NIR / 100) * ITR) - (NSR * CZrate / 100) * ITR)).replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+            }
+        })
+        // 所得額標準按鈕
+        $("#ADJ_ACIT").on("mouseenter", function () {
+            var tooltipText = "若遇抽查調帳且未能提示完整帳簿憑證，國稅局通常將依『同業利潤標準』淨利率進行核定補徵。";
+            var tooltipHtml = '<div class="custom-tooltip">' + tooltipText + '</div>';
+            // 把提示框塞進按鈕內，並用 fadeIn 做出淡入效果
+            $(this).after(tooltipHtml);
+            $(".custom-tooltip").css({
+                "top": "auto",        /* 拔掉原本讓你飛上天的 top */
+                "bottom": "60%",     /* 讓它死死貼在 input 頭頂 */
+                "left": "50%",       /* 靠左對齊，往右挪一點比較美 */
+                "margin-bottom": "8px",/* 跟紫色輸入框留點空隙 */
+                "white-space": "normal", /* 💡 允許文字自動折行，不然字太多會變超長一條 */
+                "width": "280px",     /* 設定提示框寬度，字才不會擠在一起 */
+                "z-index": "9999",
+
+            })
+            $(".custom-tooltip").fadeIn(200);
+        });
+        // 移入預估調帳所得稅提示字
+        $("#ADJ_ACIT").on("mouseleave", function () {
+            $(".custom-tooltip").remove();
+        });
+        // 移出預估調帳所得稅提示字
+        $("#btn-calculate-NPMA").on("click", function () {
+            function clear() {
+                $("#GP").val("")
+                $("#OI").val("")
+                $("#result-text").text("")
+                $("#ACIT").val("0")
+                $("#ADJ_ACIT").val("0")
+                $("#ADJ_ACIT_text").text("")
+                $("#PAT_A").val("0")
+
+            }
+            var NRT_text = $("#NSR").val()
+            var GPrate_text = $("#GPM").val()
+            var ITR_text = $("#ITR").val()
+            var NSR = Number($("#NSR").val().replace(/,/g, ''))
+            var OPEX = Number($("#OPEX_she").val().replace(/,/g, ''))
+            var GPrate = parseFloat($("#GPM").val())
+            var ITR = 0.2
+            var GPcacu = Math.round(((NSR * GPrate / 100)))
+            var GP = String(Math.round(((NSR * GPrate / 100)))).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+            // 下方宣告調帳預估營所稅所需項目
+            var NIR = localStorage.getItem("NIR")
+            var ADJACITcacu = Math.round(((NSR * NIR / 100) * ITR))
+            var ADJACIT = String(Math.round(((NSR * NIR / 100) * ITR))).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            if (NSR == "" || $("#OPEX_she").val() == "") {
+                alert("請完整輸入銷貨收入及營業費用金額"); clear()
+            } else {
+                $("#GP").val(GP);
+                var OIcacu = GPcacu - OPEX
+                var OI = String(OIcacu).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                var NOI = OI.replace(/^-?/, "(") + ")";
+
+                if (OIcacu < 0) { $("#OI").val(NOI); $("#OI").css("color", "#FF6B6B") }
+                else { $("#OI").val(OI).css("color", "#B0B5BC") }
+                if (OIcacu < 0) {
+                    var ACITcacu = OIcacu * ITR
+                    var ACIT = String(ACITcacu).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    $("#ACIT").val("0"); $("#result-text").text("因營業利益為負，本期營所稅免予計徵（為 0）。");
+                    $("#ADJ_ACIT").val(ADJACIT);
+                    $("#ADJ_ACIT_text").text(`年度銷貨收入淨額${NRT_text}*淨利率${NIR}%*所得稅率${ITR_text}=${ADJACIT}`)
+                    var ACIT_input = Number($("#ACIT").val().replace(/,/g, ''))
+                    var PAT_Acacu = ADJACITcacu - ACIT_input
+                    var PAT_A = String(PAT_Acacu).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    $("#PAT_A").val(PAT_A)
+                }
+                else {
+                    var ACITcacu = OIcacu * ITR
+                    var ACIT = String(ACITcacu).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    $("#ACIT").val(ACIT)
+                    $("#result-text").text(`年度營業利益${OI}*所得稅率${ITR_text}=${ACIT}`)
+                    $("#ADJ_ACIT").val(ADJACIT);
+                    $("#ADJ_ACIT_text").text(`年度銷貨收入淨額${NRT_text}*淨利率${NIR}%*所得稅率${ITR_text}=${ADJACIT}`)
+                    var ACIT_input = Number($("#ACIT").val().replace(/,/g, ''))
+                    var PAT_Acacu = ADJACITcacu - ACIT_input
+                    var PAT_A = String(PAT_Acacu).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    $("#PAT_A").val(PAT_A)
+                }
+            }
+            var ACITvalue = Number($("#ACIT").val().replace(/,/g, ''))
+            var ADJACITvalue = Number($("#ADJ_ACIT").val().replace(/,/g, ''))
+            if (ADJACITvalue < ACITvalue) { $("#PAT_A").val("0") }
+
+
+        })
+        // 成本淨決按鈕
+        $('#NPMA').change(function () {
+            // 使用 prop('checked') 檢查目前是否被勾選，會回傳 true 或 false
+            let isChecked = $(this).prop('checked');
+            if (isChecked) {
+                $("#result-text").text("")
+                $("#ACIT").val("0")
+                $("#ADJ_ACIT").val("0")
+                $("#ADJ_ACIT_text").text("")
+                $("#PAT_A").val("0")
+            } else {
+                $("#result-text").text("")
+                $("#ACIT").val("0")
+                $("#ADJ_ACIT").val("0")
+                $("#ADJ_ACIT_text").text("")
+                $("#PAT_A").val("0")
+            }
+        });
+        //轉換成本淨決模式清除結果
+
+    });
 
 
 </script>
