@@ -50,6 +50,31 @@
 
             background: rgba(0, 0, 0, 0.4);
             /* 給對白一個淡淡的黑透明底色背景 */
+
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        .textCSStired {
+            font-family: 'Noto Sans TC', sans-serif;
+            /* 確保字體俐落 */
+            font-size: 14px;
+            font-weight: bold;
+            color: #fca5a5;
+            /* 淡淡的楓葉紅/惡魔殺手代表色，比純白更有帶入感 */
+            letter-spacing: 1px;
+            /* 字距微調，增加易讀性 */
+
+            /* 關鍵：加上微小的黑色文字陰影（Text Shadow），這是遊戲介面文字清晰的祕密 */
+            text-shadow:
+                1px 1px 0px #000,
+                -1px -1px 0px #000,
+                1px -1px 0px #000,
+                -1px 1px 0px #000;
+
+            background: rgba(0, 0, 0, 0.4);
+            /* 給對白一個淡淡的黑透明底色背景 */
+
             padding: 6px 12px;
             border-radius: 6px;
         }
@@ -528,7 +553,7 @@
         <a href="PEIT.html"><img class="maple-btn1" style="width: 300px;" src="./img/返回營所稅介紹.jpg"></a>
         <button type="button" id="btn-shushen" class="toggle-btn active">稅務申報模型</button>
         <img id="tired" src="./img/圖樣.png" class="maple-btn1" style="object-fit: cover;">
-        <span class="textCSS" style="display: none;">惡魔殺手那個傢伙<br>竟然讓我自己報稅，可惡！</span>
+        <span class="textCSStired" style="display: none;">惡魔殺手那個傢伙<br>竟然讓我自己報稅，可惡！</span>
     </div>
 
     <div id="shushen-block">
@@ -635,7 +660,7 @@
             </div>
         </div>
 
-        
+
 
 
     </div>
@@ -705,10 +730,10 @@
 
 <script>
     $("#tired").on("mouseenter", function () {
-        $(".textCSS").prop("style", "display:block")
+        $(".textCSStired").prop("style", "display:block")
     })
     $("#tired").on("mouseleave", function () {
-        $(".textCSS").prop("style", "display:none")
+        $(".textCSStired").prop("style", "display:none")
     })
 
     $("#btn-shushen").on("click", function () {
