@@ -526,8 +526,7 @@
     <div class="toggle-container">
         <a href="index.html"><img class="maple-btn1" style="width: 300px;" src="./img/返回營業稅-2.jpg"></a>
         <a href="PEIT.html"><img class="maple-btn1" style="width: 300px;" src="./img/返回營所稅介紹.jpg"></a>
-        <button type="button" id="btn-shushen" class="toggle-btn active">書審或所得額申報模型</button>
-        <button type="button" id="btn-chazhang" class="toggle-btn">查帳申報模型</button>
+        <button type="button" id="btn-shushen" class="toggle-btn active">稅務申報模型</button>
         <img id="tired" src="./img/圖樣.png" class="maple-btn1" style="object-fit: cover;">
         <span class="textCSS" style="display: none;">惡魔殺手那個傢伙<br>竟然讓我自己報稅，可惡！</span>
     </div>
@@ -604,16 +603,18 @@
             </div>
 
 
-            <div class="form-group" id="ITR_type">
+            <div class="form-group" id="ITR_type" style="display: inline;">
                 <label for="ITR" class="form-label">所得稅率</label>
-                <input id="ITR" class="form-input" type="text" readonly value="20%">
+                <input id="ITR" class="form-input" type="text" style="display: inline-block;" readonly>
+                <button id="lockITR" style=" width: 10%;">鎖定</button>
+                <button id="editITR" style=" width: 15%;">自行修改所得稅率</button>
             </div>
             <hr>
             <button id="btn-calculate-book" class="bt_origin">點擊計算 (書審)</button>
             <button id="btn-calculate-SNPM" class="bt_origin">點擊計算 (所得額標準)</button>
             <button id="btn-calculate-NPMA" style="display: none;">點擊計算</button>
             <button id="clear">點我清空試算</button>
-            
+
             <hr>
 
             <h4>計算結果</h4>
@@ -634,44 +635,8 @@
             </div>
         </div>
 
-        <div class="model-card" id="chazhang" style="display: none;">
-            <h3>查帳申報模型</h3>
+        
 
-            <div class="form-group">
-                <label for="NSR_Audit" class="form-label">銷貨收入淨額 (NSR)</label>
-                <input id="NSR_Audit" class="form-input" type="text" data-type="money" placeholder="請輸入金額...">
-            </div>
-
-            <div class="form-group">
-                <label for="COGS" class="form-label">營業成本 (COGS)</label>
-                <input id="COGS" class="form-input" type="text" data-type="money" placeholder="請輸入金額...">
-            </div>
-
-            <div class="form-group">
-                <label for="OPEX" class="form-label">營業費用 (OPEX)</label>
-                <input id="OPEX" class="form-input" type="text" data-type="money" placeholder="請輸入金額...">
-            </div>
-
-            <div class="form-group">
-                <label for="NIO" class="form-label">營業外收入及損失淨額 (NIO)</label>
-                <input id="NIO" class="form-input" type="text" data-type="money" placeholder="請輸入金額...">
-            </div>
-
-            <div class="form-group">
-                <label for="OI_Audit" class="form-label">課稅所得額 (OI)</label>
-                <input id="OI_Audit" class="form-input" type="text" data-type="money" readonly>
-            </div>
-
-            <hr>
-            <button id="btn-calculate-audit">點擊計算 (查帳)</button>
-            <hr>
-
-            <h4>計算結果</h4>
-            <div class="form-group">
-                <label for="ACIT_Audit" class="form-label">年度營所稅：</label>
-                <input id="ACIT_Audit" class="form-input result-input" data-type="money" type="text" readonly value="0">
-            </div>
-        </div>
 
     </div>
     <!-- 以下為提示框資料 -->
@@ -775,7 +740,6 @@
             $("#GP_type").prop("style", "display:block")
             $("#OPEX_type").prop("style", "display:block")
             $("#OI_type").prop("style", "display:block")
-            $("#ITR_type").prop("style", "display:block")
             $("#PSI_type").prop("style", "display:none")
             $("#SNPM_type").prop("style", "display:none")
             $("#btn-calculate-NPMA").prop("style", "display:inline-block")
@@ -785,7 +749,6 @@
             $("#GP_type").prop("style", "display:none")
             $("#OPEX_type").prop("style", "display:none")
             $("#OI_type").prop("style", "display:none")
-            $("#ITR_type").prop("style", "display:none")
             $("#PSI_type").prop("style", "display:inline-block")
             $("#SNPM_type").prop("style", "display:block")
             $("#btn-calculate-NPMA").prop("style", "display:none")
@@ -904,8 +867,33 @@
 </script>
 
 <script>
+
     $(document).ready(function () {
+        var ITRcacu = 0.2
+        var ITRs = "20%"
+        $("#ITR").val(ITRs)
+        // 宣告所得稅率為常域變數
+        $("#editITR").on("click", function () {
+            $("#ITR").prop("readonly", false).focus()
+            $("#ITR").on("input", function () {
+                var ITRvalue = $(this).val()
+                ITRvalue = ITRvalue.replace('%', '');
+                let cleanITRvalue = ITRvalue.replace(/[^0-9]/g, '');
+                $("#ITR").val(`${cleanITRvalue}%`)
+            })
+        })
+        // 編輯營所稅率
+        $("#lockITR").on("click", function () {
+            var ITRvalue = parseInt($("#ITR").val(), 10)
+            if (ITRvalue > 100) { alert("請輸入小於100的數字") }
+            else { ITRcacu = ITRvalue / 100; $("#ITR").prop("readonly", true) }
+        })
+        // 鎖定營所稅率
         $("#clear").on("click", function () {
+            if ($("#ITR").prop("readonly") === false) {
+                alert("執行任何動作前請先鎖定營所稅率！");
+                return;
+            }
             $("#NSR").val("")
             $("#GP").val("")
             $("#OPEX_she").val("")
@@ -918,6 +906,10 @@
         })
         // 清除資料
         $("#btn-calculate-book").on("click", function () {
+            if ($("#ITR").prop("readonly") === false) {
+                alert("執行任何動作前請先鎖定營所稅率！");
+                return;
+            }
             function clear() {
                 $("#result-text").text("")
                 $("#ACIT").val("0")
@@ -930,7 +922,7 @@
             var ITR_text = $("#ITR").val()
             var NSR = Number($("#NSR").val().replace(/,/g, ''))
             var SSrate = parseFloat($("#PSI").val().replace(/[\(\)]/g, ''))
-            var ITR = 0.2
+            var ITR = ITRcacu
             var ACIT = String(Math.round(((NSR * SSrate / 100) * ITR))).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             // 下方宣告調帳預估營所稅所需項目
             var NIR = localStorage.getItem("NIR")
@@ -975,6 +967,10 @@
         });
         // 移出所得額按鈕消失提示字
         $("#btn-calculate-SNPM").on("click", function () {
+            if ($("#ITR").prop("readonly") === false) {
+                alert("執行任何動作前請先鎖定營所稅率！");
+                return;
+            }
             function clear() {
                 $("#result-text").text("")
                 $("#ACIT").val("0")
@@ -987,7 +983,7 @@
             var ITR_text = $("#ITR").val()
             var NSR = Number($("#NSR").val().replace(/,/g, ''))
             var CZrate = parseFloat($("#SNPM").val())
-            var ITR = 0.2
+            var ITR = ITRcacu
             var ACIT = String(Math.round(((NSR * CZrate / 100) * ITR))).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             // 下方宣告調帳預估營所稅所需項目
             var NIR = localStorage.getItem("NIR")
@@ -1024,6 +1020,10 @@
         });
         // 移出預估調帳所得稅提示字
         $("#btn-calculate-NPMA").on("click", function () {
+            if ($("#ITR").prop("readonly") === false) {
+                alert("執行任何動作前請先鎖定營所稅率！");
+                return;
+            }
             function clear() {
                 $("#GP").val("")
                 $("#OI").val("")
@@ -1040,7 +1040,7 @@
             var NSR = Number($("#NSR").val().replace(/,/g, ''))
             var OPEX = Number($("#OPEX_she").val().replace(/,/g, ''))
             var GPrate = parseFloat($("#GPM").val())
-            var ITR = 0.2
+            var ITR = ITRcacu
             var GPcacu = Math.round(((NSR * GPrate / 100)))
             var GP = String(Math.round(((NSR * GPrate / 100)))).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
@@ -1112,6 +1112,10 @@
 
 
 </script>
+<!-- 書審所得額模型 -->
+
+
+
 
 
 </html>
